@@ -3,6 +3,5 @@ folium
 streamlit_folium
 pandas
 geopandas
-io
 leafmap
 ohsome
