@@ -4,6 +4,8 @@ from ohsome import OhsomeClient
 import geopandas as gpd
 import io
 
+update_date='2024-08-21'
+
 def save_geojson_with_bytesio(dataframe):
     #Function to return bytesIO of the geojson
     shp = io.BytesIO()
@@ -15,6 +17,7 @@ st.set_page_config(
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="expanded")
+st.write('# Data visulization')
 
 style_1 = {
     "stroke": True,
@@ -38,11 +41,11 @@ def drawMap():
     client = OhsomeClient()
     m = leafmap.Map(center=[0,0],zoom=0)
     response = client.elements.geometry.post(bboxes=[st.session_state.bound[0],st.session_state.bound[1],st.session_state.bound[2],st.session_state.bound[3]],
-		time=str(st.session_state.year)+"-01-01,2024-01-01",
+		time=str(st.session_state.year)+"-01-01,"+update_date,
 		filter="building=* and geometry:polygon")
     response_gdf = response.as_dataframe().reset_index()
     response_00=response_gdf[response_gdf['@snapshotTimestamp']==str(st.session_state.year)+"-01-01"]
-    response_01=response_gdf[response_gdf['@snapshotTimestamp']=="2024-01-01"]
+    response_01=response_gdf[response_gdf['@snapshotTimestamp']==update_date]
     m.add_gdf(response_00,style=style_1 ,layer_name=st.session_state['year'])
     m.add_gdf(response_01,style=style_2 ,layer_name='2024')
 
@@ -77,7 +80,9 @@ def drawMap():
 
 
 if "year" not in st.session_state or "bound" not in st.session_state:
-    st.write('you have to select year first!!')
+    st.write('you have to select year first!')
 else:
     drawMap()
 
+if st.button("Back"):
+    st.switch_page("01.py")
