@@ -83,6 +83,3 @@ if "year" not in st.session_state or "bound" not in st.session_state:
     st.write('you have to select year first!')
 else:
     drawMap()
-
-if st.button("Back"):
-    st.switch_page("01.py")

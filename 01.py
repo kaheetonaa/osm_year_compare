@@ -6,7 +6,6 @@ st.set_page_config(
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="expanded")
-st.session_state.approved=0
 st.write('# Initialisation')
 st.write('Firstly, zoom to the area preferable (zoom level should exceed 13)')
 m = folium.Map(location=[0,0], zoom_start=0)
@@ -26,11 +25,4 @@ if st.button("Submit"):
         st.write(st.session_state.center)
         st.write("You selected:", st.session_state.year)
         st.write("OK.")
-        st.session_state.approved=1
-if st.button("Proceed"):
-   
-   if st.session_state.approved==1:
-       st.switch_page("02.py")
-   else:
-        st.write('You have to submit first!')
        
