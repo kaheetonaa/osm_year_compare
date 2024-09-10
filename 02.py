@@ -17,7 +17,7 @@ st.set_page_config(
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="expanded")
-st.write('# Data visulization')
+st.write('# Data visualization')
 
 style_1 = {
     "stroke": True,
@@ -36,18 +36,18 @@ style_2 = {
 }
 
 def drawMap():
-    st.write('# Compare OSM data '+str(st.session_state.year)+' - 2024')
+    st.write('# Compare OSM data '+str(st.session_state.year_1)+' with '+str(st.session_state.year_2))
     st.write('It can take up to several minutes downloading data from the server')
     client = OhsomeClient()
     m = leafmap.Map(center=[0,0],zoom=0)
     response = client.elements.geometry.post(bboxes=[st.session_state.bound[0],st.session_state.bound[1],st.session_state.bound[2],st.session_state.bound[3]],
-		time=str(st.session_state.year)+"-01-01,"+update_date,
+		time=str(st.session_state.year_1)+","+str(st.session_state.year_2),
 		filter="building=* and geometry:polygon")
     response_gdf = response.as_dataframe().reset_index()
-    response_00=response_gdf[response_gdf['@snapshotTimestamp']==str(st.session_state.year)+"-01-01"]
-    response_01=response_gdf[response_gdf['@snapshotTimestamp']==update_date]
-    m.add_gdf(response_00,style=style_1 ,layer_name=st.session_state['year'])
-    m.add_gdf(response_01,style=style_2 ,layer_name='2024')
+    response_00=response_gdf[response_gdf['@snapshotTimestamp']==str(st.session_state.year_1)]
+    response_01=response_gdf[response_gdf['@snapshotTimestamp']==str(st.session_state.year_2)]
+    m.add_gdf(response_00,style=style_1 ,layer_name=str(st.session_state['year_1']))
+    m.add_gdf(response_01,style=style_2 ,layer_name=str(st.session_state['year_2']))
 
     m.to_streamlit()
 
@@ -60,26 +60,26 @@ def drawMap():
 
     col_1,col_2=st.columns(2)
     with col_1:
-        st.write('## Year '+ str(st.session_state['year']))
+        st.write('## Year '+ str(st.session_state['year_1']))
         st.write('number of building is '+str(response_00.count()[0]))
         st.download_button(
-            label="Download data "+str(st.session_state['year']),
+            label="Download data "+str(st.session_state['year_1']),
             data=save_geojson_with_bytesio(response_00),
-            file_name='osm_data'+str(st.session_state['year'])+'.geojson',
+            file_name='osm_data'+str(st.session_state['year_1'])+'.geojson',
             mime='application/geo+json',
         )
     with col_2:
-        st.write('## Year 2024')
+        st.write('## Year '+ str(st.session_state['year_2']))
         st.write('number of building is '+str(response_01.count()[0]))
         st.download_button(
-            label="Download data 2024",
+            label="Download data "+str(st.session_state['year_2']),
             data=save_geojson_with_bytesio(response_01),
-            file_name='osm_data_2024'+'.geojson',
+            file_name='osm_data'+str(st.session_state['year_2'])+'.geojson',
             mime='application/geo+json',
         )
 
 
-if "year" not in st.session_state or "bound" not in st.session_state:
+if "year_1" not in st.session_state or "year_2" not in st.session_state or "bound" not in st.session_state :
     st.write('you have to select year first!')
 else:
     drawMap()
